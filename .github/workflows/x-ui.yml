@@ -34,10 +34,10 @@ jobs:
           sudo chmod +x /usr/bin/repo
       - name: Setup git Store Password
         env:
-          GITHUB_PASSWD: ${{ secrets.GITHUB_PASSWD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global credential.helper store
-          git clone https://dopaemon:$GITHUB_PASSWD@github.com/X-UI-Unofficial/Store-Passwd.git
+          git clone https://dopaemon:$GITHUB_TOKEN@github.com/X-UI-Unofficial/Store-Passwd.git
       - name: Start repo Source
         run: |
           mkdir -p $HOME/X-UI
