@@ -1,0 +1,55 @@
+# This is a basic workflow to help you get started with Actions
+
+name: X-UI Release
+
+# Allows you to run this workflow manually from the Actions tab
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 0 * * 1,5"
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: GoLang 1.x.y
+        uses: actions/setup-go@v3
+        with:
+          go-version: '^1.19.3' # The Go version to download (if necessary) and use.
+      - name: Start Setup
+        run: |
+          sudo apt-get update
+          sudo apt-get install -yq gcc-aarch64-linux-gnu gcc-s390x-linux-gnu gcc-riscv64-linux-gnu python-is-python3
+          sudo curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > /usr/bin/repo
+          sudo chmod +x /usr/bin/repo
+      - name: Start Setup Submodule
+        run: |
+          mkdir -p $HOME/.ssh
+          echo '${{ secrets.SUBMODULE_REPO_DEPLOY_KEY }}' > $HOME/.ssh/ssh.key
+          chmod 600 $HOME/.ssh/ssh.key
+          export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/ssh.key"
+          mkdir -p $HOME/X-UI
+          cd $HOME/X-UI
+          repo init -u https://github.com/X-UI-Unofficial/manifest.git -b main
+          repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+      - name: Start Building X-UI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          rm -rf $HOME/X-UI/x-ui/web/translation/.git
+          rm -rf $HOME/X-UI/x-ui/bin/.git
+          rm -rf $HOME/X-UI/x-ui/web/.git
+          rm -rf $HOME/X-UI/x-ui/web/translation/.placeholder
+          rm -rf $HOME/X-UI/x-ui/bin/.placeholder
+          rm -rf $HOME/X-UI/x-ui/web/.placeholder
+          cd $HOME/X-UI/x-ui/
+          ./build
