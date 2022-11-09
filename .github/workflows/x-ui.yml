@@ -32,7 +32,7 @@ jobs:
           curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > $HOME/repo
           sudo mv $HOME/repo /usr/bin/
           sudo chmod +x /usr/bin/repo
-      - name: Start Setup Submodule
+      - name: Start Setup Source
         run: |
           mkdir -p $HOME/.ssh
           echo '${{ secrets.SUBMODULE_REPO_DEPLOY_KEY }}' > $HOME/.ssh/ssh.key
