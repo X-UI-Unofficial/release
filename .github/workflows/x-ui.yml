@@ -37,7 +37,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global credential.helper store
-          git clone https://dopaemon:{{ secrets.GITHUB_TOKEN }}@github.com/X-UI-Unofficial/Store-Passwd.git
+          git clone https://dopaemon:'${{ secrets.GITHUB_TOKEN }}'@github.com/X-UI-Unofficial/Store-Passwd.git
       - name: Start repo Source
         run: |
           mkdir -p $HOME/X-UI
