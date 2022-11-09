@@ -28,16 +28,18 @@ jobs:
       - name: Start Setup
         run: |
           sudo apt-get update
-          sudo apt-get install -yq gcc-aarch64-linux-gnu gcc-s390x-linux-gnu gcc-riscv64-linux-gnu python-is-python3
+          sudo apt-get install -yq git sshpass gcc-aarch64-linux-gnu gcc-s390x-linux-gnu gcc-riscv64-linux-gnu python-is-python3
           curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > $HOME/repo
           sudo mv $HOME/repo /usr/bin/
           sudo chmod +x /usr/bin/repo
-      - name: Start Setup Source
+      - name: Setup git Store Password
+        env:
+          GITHUB_PASSWD: ${{ secrets.GITHUB_PASSWD }}
         run: |
-          mkdir -p $HOME/.ssh
-          echo '${{ secrets.SUBMODULE_REPO_DEPLOY_KEY }}' > $HOME/.ssh/ssh.key
-          chmod 600 $HOME/.ssh/ssh.key
-          export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/ssh.key"
+          git config --global credential.helper store
+          git clone https://dopaemon:$GITHUB_PASSWD@github.com/X-UI-Unofficial/Store-Passwd.git
+      - name: Start repo Source
+        run: |
           mkdir -p $HOME/X-UI
           cd $HOME/X-UI
           repo init -u https://github.com/X-UI-Unofficial/manifest.git -b main
