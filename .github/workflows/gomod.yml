@@ -59,8 +59,8 @@ jobs:
           git config --local user.name "dopaemon"
           git config --local user.email "polarisdp@gmail.com"
           git remote rm origin
-          git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUBTOKEN }}@github.com/${{ github.repository }}"
-          git gc --aggressive
+          git remote add origin "https://github.com/X-UI-Unofficial/x-ui.git"
+          git checkout -b main
           git add -v go.mod
           git add -v go.sum
           git commit -s -m "GoLang: Upgrade go mod $(date +%Y%m%d%H%M)"
