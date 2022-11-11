@@ -56,4 +56,4 @@ jobs:
           rm -rf $HOME/X-UI/x-ui/bin/.placeholder
           rm -rf $HOME/X-UI/x-ui/web/.placeholder
           cd $HOME/X-UI/x-ui/
-          ./build
+          bash bin/build
