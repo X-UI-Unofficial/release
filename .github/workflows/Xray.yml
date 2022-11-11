@@ -34,8 +34,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global credential.helper store
-          git config --local user.name "dopaemon"
-          git config --local user.email "polarisdp@gmail.com"
+          git config --global user.name "dopaemon"
+          git config --global user.email "polarisdp@gmail.com"
           export FULL_TOKEN=${{ secrets.TOKEN_ONE }}${{ secrets.TOKEN_TWO }}${{ secrets.TOKEN_THREE }}
           sshpass -p ${FULL_TOKEN} git clone https://dopaemon@github.com/X-UI-Unofficial/Store-Passwd.git
       - name: Start repo Source
