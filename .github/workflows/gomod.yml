@@ -58,7 +58,6 @@ jobs:
           cd $HOME/X-UI/x-ui
           git config --local user.name "dopaemon"
           git config --local user.email "polarisdp@gmail.com"
-          git remote rm origin
           git remote add origin "https://github.com/X-UI-Unofficial/x-ui.git"
           git checkout -b main
           git add -v go.mod
