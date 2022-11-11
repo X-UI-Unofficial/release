@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: X-UI Upgrade
+name: X-UI Go Mod Upgrade
 
 # Allows you to run this workflow manually from the Actions tab
 on:
@@ -64,11 +64,3 @@ jobs:
           git add -v go.sum
           git commit -s -m "GoLang: Upgrade go mod $(date +%Y%m%d%H%M)"
           git push -f -u origin main
-      - name: Start merge & push Xray Core
-        run: |
-          cd $HOME/
-          git clone -b main --single-branch https://github.com/X-UI-Unofficial/Xray-core.git Xray
-          cd Xray
-          git fetch https://github.com/XTLS/Xray-core.git main
-          git merge FETCH_HEAD
-          git push -u origin main
