@@ -53,5 +53,5 @@ jobs:
           git merge FETCH_HEAD
       - name: Start push GoLang module
         run: |
-          cd $HOME/X-UI/x-ui
+          cd $HOME/Xray
           git push -u origin main
