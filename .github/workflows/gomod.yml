@@ -42,18 +42,20 @@ jobs:
       - name: Start repo Source
         run: |
           mkdir -p $HOME/X-UI
-          cd $HOME/X-UI
+          cd $HOME/X-UI/x-ui
           repo init -u https://github.com/X-UI-Unofficial/manifest.git -b main
           repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
       - name: Start Update Modules X-UI
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          cd $HOME/X-UI/x-ui
           go mod tidy
           go get -u
           go mod download
       - name: Start push GoLang module
         run: |
+          cd $HOME/X-UI/x-ui
           git config --local user.name "dopaemon"
           git config --local user.email "polarisdp@gmail.com"
           git remote rm origin
