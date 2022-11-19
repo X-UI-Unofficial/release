@@ -138,7 +138,7 @@ install_x-ui() {
     fi
     
     if [[ -e /usr/bin/x-ui/ ]]; then
-        rm /usr/bin/x-ui/ -rf
+        rm /usr/bin/x-ui -rf
     fi
 
     tar zxvf x-ui-linux-${arch}.tar.gz
@@ -148,7 +148,7 @@ install_x-ui() {
     cp -f x-ui.service /etc/systemd/system/
     chmod +x /usr/local/x-ui/x-ui.sh
     chmod +x /usr/bin/x-ui
-    cp -r /usr/local/x-ui/x-ui.sh /usr/bin/x-ui/x-ui
+    cp -r /usr/local/x-ui/x-ui.sh /usr/bin/x-ui
     if [[ $arch == "aarch64" || $arch == "arm64" ]]; then
        mv /usr/local/x-ui/bin/xray-linux-aarch64 /usr/local/x-ui/bin/xray-linux-arm64
     elif [[ $arch == "x86_64" || $arch == "x64" || $arch == "amd64" ]]; then
