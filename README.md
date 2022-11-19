@@ -17,7 +17,7 @@
 # Install & Upgrade
 
 ```
-bash <(curl -Ls https://raw.githubusercontent.com/X-UI-Unofficial/release/main/install.sh) 221118_v5
+bash <(curl -Ls https://raw.githubusercontent.com/X-UI-Unofficial/release/main/install.sh) 221119_v1
 ```
 
 ## Manual install & upgrade
