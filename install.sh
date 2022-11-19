@@ -79,30 +79,26 @@ fi
 
 install_base() {
     if [[ x"${release}" == x"centos" ]]; then
-        yum install wget curl tar -y
+        yum install wget curl tar newt -y
     else
-        apt install wget curl tar -y
+        apt-get install wget curl tar whiptail -y
     fi
 }
 
-#This function will be called when user installed x-ui out of sercurity
 config_after_install() {
-    echo -e "${yellow}For security reasons, it is necessary to forcibly modify the port and account password after the installation/update is completed.${plain}"
-    read -p "Confirm whether to continue?[y/n]": config_confirm
-    if [[ x"${config_confirm}" == x"y" || x"${config_confirm}" == x"Y" ]]; then
-        read -p "Please set your account name:" config_account
-        echo -e "${yellow}Your account name will be set to:${config_account}${plain}"
-        read -p "Please set your account password:" config_password
-        echo -e "${yellow}Please set your account password:${config_password}${plain}"
-        read -p "Please set the panel access port:" config_port
-        echo -e "${yellow}Your panel access port will be set to:${config_port}${plain}"
-        echo -e "${yellow}Confirm setting, setting${plain}"
+    whiptail --title "Warning" --msgbox "For security reasons, it is necessary to forcibly modify the port and account password after the installation/update is completed." 8 78
+    if (whiptail --title "Confirm whether to continue ?" --yesno "Select Yes if you want to setup username / password X-UI, select No for default Login." 8 78); then
+        config_account=$(whiptail --inputbox "Please set your account name" 8 39 --title "Create Account" 3>&1 1>&2 2>&3)
+        [[ ! -z "${config_account}" ]] || config_account="admin"
+        config_password=$(whiptail --passwordbox "Please set your password" 8 39 --title "Create Account" 3>&1 1>&2 2>&3)
+        [[ ! -z "${config_password}" ]] || config_password="admin"
+        config_port=$(whiptail --inputbox "Please set your port" 8 39 --title "Setup X-UI" 3>&1 1>&2 2>&3)
+        [[ ! -z "${config_port}" ]] || config_port="54321"
         /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password}
-        echo -e "${yellow}Account password setting completed${plain}"
         /usr/local/x-ui/x-ui setting -port ${config_port}
-        echo -e "${yellow}Panel port setting completed${plain}"
+        whiptail --title "X-UI Installer" --msgbox "X-UI Settings Complete" 8 78
     else
-        echo -e "${red}Cancelled, all setting items are default settings, please modify in time${plain}"
+        whiptail --title "X-UI Installer" --msgbox "Cancelled, all setting items are default settings, please modify in time.\nDefault username: admin \nDefault password: admin \nDefault port: 54321" 12 80
     fi
 }
 
@@ -113,22 +109,20 @@ install_x-ui() {
     if [ $# == 0 ]; then
         last_version=$(curl -Ls "https://api.github.com/repos/X-UI-Unofficial/release/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$last_version" ]]; then
-            echo -e "${red}The failure of the X-UI version may be beyond the GitHub API limit, please try it later, or manually specify the X-UI version installation${plain}"
+            whiptail --title "X-UI Installer" --msgbox "The failure of the X-UI version may be beyond the GitHub API limit, please try it later, or manually specify the X-UI version installation" 8 78
             exit 1
         fi
-        echo -e "detected x-ui The latest version of: ${last_version}, start installation"
-        wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch}.tar.gz https://github.com/X-UI-Unofficial/release/releases/download/${last_version}/x-ui-linux-${arch}.tar.gz
+        wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch}.tar.gz https://github.com/X-UI-Unofficial/release/releases/download/${last_version}/x-ui-linux-${arch}.tar.gz 2>&1 |  stdbuf -o0 awk '/[.] +[0-9][0-9]?[0-9]?%/ { print substr($0,63,3) }' |  whiptail --title "X-UI Installer" --gauge "Download X-UI ..." 6 50 0
         if [[ $? -ne 0 ]]; then
-            echo -e "${red}Failed to download x-ui, please make sure your server can download Github files${plain}"
+            whiptail --title "X-UI Installer" --msgbox "Failed to download x-ui, please make sure your server can download Github files" 8 78
             exit 1
         fi
     else
         last_version=$1
         url="https://github.com/X-UI-Unofficial/release/releases/download/${last_version}/x-ui-linux-${arch}.tar.gz"
-        echo -e "start installation x-ui v$1"
-        wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch}.tar.gz ${url}
+        wget -N --no-check-certificate -O /usr/local/x-ui-linux-${arch}.tar.gz ${url} 2>&1 |  stdbuf -o0 awk '/[.] +[0-9][0-9]?[0-9]?%/ { print substr($0,63,3) }' |  whiptail --title "X-UI Installer" --gauge "Download X-UI ..." 6 50 0
         if [[ $? -ne 0 ]]; then
-            echo -e "${red}Failed to download x-ui v$1, please make sure this version exists${plain}"
+            whiptail --title "X-UI Installer" --msgbox "Failed to download x-ui v$1, please make sure this version exists" 8 78
             exit 1
         fi
     fi
@@ -136,12 +130,12 @@ install_x-ui() {
     if [[ -e /usr/local/x-ui/ ]]; then
         rm /usr/local/x-ui/ -rf
     fi
-    
+
     if [[ -e /usr/bin/x-ui/ ]]; then
         rm /usr/bin/x-ui -rf
     fi
 
-    tar zxvf x-ui-linux-${arch}.tar.gz
+    tar zxf x-ui-linux-${arch}.tar.gz
     rm x-ui-linux-${arch}.tar.gz -f
     cd x-ui
     chmod +x x-ui bin/xray-linux-${arch}
@@ -155,34 +149,11 @@ install_x-ui() {
        mv /usr/local/x-ui/bin/xray-linux-x86_64 /usr/local/x-ui/bin/xray-linux-amd64
     fi
     config_after_install
-    # echo -e "If it is a fresh installation, the default web port is ${green}54321${plain}, and the default username and password are ${green}admin${plain}"
-    # echo -e "Please make sure this port is not occupied by other programs, ${yellow} and make sure port 54321 is released ${plain}"
-    # echo -e "If you want to modify 54321 to another port, enter the x-ui command to modify it, and also make sure that the port you modify is also released"
-    # echo -e ""
-    # echo -e "If it's the update panel, access the panel as you did before"
-    # echo -e ""
     systemctl daemon-reload
     systemctl enable x-ui
     systemctl start x-ui
-    echo -e "${green}x-ui v${last_version}${plain} The installation is complete, the panel is launched."
-    echo -e ""
-    echo -e "x-ui How to use the management script: "
-    echo -e "----------------------------------------------"
-    echo -e "x-ui              - Show admin menu (more functions)"
-    echo -e "x-ui start        - Start the x-ui panel"
-    echo -e "x-ui stop         - stop x-ui panel"
-    echo -e "x-ui restart      - restart x-ui panel"
-    echo -e "x-ui status       - View x-ui status"
-    echo -e "x-ui enable       - Set x-ui to start automatically at boot"
-    echo -e "x-ui disable      - Cancel x-ui boot auto-start"
-    echo -e "x-ui log          - View x-ui logs"
-    echo -e "x-ui v2-ui        - Migrate the v2-ui account data of this machine to x-ui"
-    echo -e "x-ui update       - Update x-ui panel"
-    echo -e "x-ui install      - install x-ui panel"
-    echo -e "x-ui uninstall    - uninstall x-ui panel"
-    echo -e "----------------------------------------------"
+    whiptail --title "X-UI Installer" --msgbox "Install X-UI Complete: ${last_version} \nUse command x-ui for more infomation." 8 78
 }
-
-echo -e "${green}start installation${plain}"
+whiptail --title "X-UI Installer" --msgbox "Start install X-UI" 8 78
 install_base
 install_x-ui $1
