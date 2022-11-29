@@ -28,10 +28,12 @@ jobs:
       - name: Start Setup
         run: |
           sudo apt-get update
-          sudo apt-get install -yq git sshpass gcc-aarch64-linux-gnu gcc-s390x-linux-gnu gcc-riscv64-linux-gnu python-is-python3
+          sudo apt-get install -yq git sshpass gcc-aarch64-linux-gnu gcc-s390x-linux-gnu gcc-riscv64-linux-gnu python3
           curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > $HOME/repo
           sudo mv $HOME/repo /usr/bin/
           sudo chmod +x /usr/bin/repo
+          sudo rm -rf /usr/bin/python
+          ln -sf python3 /usr/bin/python
       - name: Setup git Store Password
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
