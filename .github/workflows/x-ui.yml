@@ -32,8 +32,6 @@ jobs:
           curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > $HOME/repo
           sudo mv $HOME/repo /usr/bin/
           sudo chmod +x /usr/bin/repo
-          sudo rm -rf /usr/bin/python
-          ln -sf python3 /usr/bin/python
       - name: Setup git Store Password
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
